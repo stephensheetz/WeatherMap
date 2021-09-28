@@ -17,7 +17,9 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var forecastAdapter: ForecastAdapter
     private lateinit var viewModel: MainActivityViewModel
@@ -47,6 +49,7 @@ class MainActivity : AppCompatActivity() {
                     .build()
 
                 mapboxMap.addOnMapClickListener { point ->
+                    showProgressBar()
                     mapboxMap.clear()
                     mapboxMap.addMarker(MarkerOptions().position(point))
                     viewModel.forecast(point.latitude, point.longitude)
