@@ -20,6 +20,16 @@ class MainActivityViewModel : ViewModel() {
     fun forecast(location: String) {
         val retrofit = RetrofitInstance.getInstance().create(OpenWeatherRetrofitService::class.java)
         val call = retrofit.forecast(location, OpenWeatherRetrofitService.appid)
+        enqueCall(call)
+    }
+
+    fun forecast(lat: Double, lon: Double) {
+        val retrofit = RetrofitInstance.getInstance().create(OpenWeatherRetrofitService::class.java)
+        val call = retrofit.forecast(lat, lon, OpenWeatherRetrofitService.appid)
+        enqueCall(call)
+    }
+
+    fun enqueCall(call: Call<ForecastResult>) {
         call.enqueue(object : retrofit2.Callback<ForecastResult> {
             override fun onResponse(call: Call<ForecastResult>, response: Response<ForecastResult>) {
                 if (response.isSuccessful) {
