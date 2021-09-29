@@ -1,10 +1,7 @@
 package com.ssheetz.weathermap.view
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -17,20 +14,24 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
+import com.ssheetz.weathermap.model.ForecastPlace
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var forecastAdapter: ForecastAdapter
+    private lateinit var locationsAdapter: LocationsAdapter
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
+        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
         setContentView(R.layout.activity_main)
         setTitle(R.string.main_title)
         forecastAdapter = ForecastAdapter()
+        locationsAdapter = LocationsAdapter()
 
         initViewModel()
 
@@ -57,27 +58,29 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
-        // do an initial search?
-        //viewModel.forecast("chicago")
     }
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         viewModel.getResultsObserver().observe(this, {
-            var count = 0
-            if (it != null) {
+            if (it != null && it.forecasts.isNotEmpty()) {
                 forecastAdapter.setForecastResult(it)
                 forecastAdapter.notifyDataSetChanged()
-                count = it.forecasts.size
-            } else {
-                Toast.makeText(this, R.string.api_error, Toast.LENGTH_LONG).show()
-            }
-
-            if (count > 0) {
                 showResults()
             } else {
                 showNoResults()
+                Toast.makeText(this, R.string.api_error, Toast.LENGTH_LONG).show()
+            }
+        })
+
+        viewModel.getSavedLocationsObserver().observe(this, {
+            if (it != null) {
+                locationsAdapter.setLocations(it.places)
+                locationsAdapter.notifyDataSetChanged()
+                if (it.currentPos > -1) {
+                    val spinner = findViewById<Spinner>(R.id.spinner_locations)
+                    spinner.setSelection(it.currentPos)
+                }
             }
         })
     }
@@ -88,25 +91,26 @@ class MainActivity : AppCompatActivity() {
             adapter = forecastAdapter
         }
 
-        val editQuery = findViewById<EditText>(R.id.editText_location)
-        editQuery.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                forecast()
-                true
-            } else {
-                false
+        val spinner = findViewById<Spinner>(R.id.spinner_locations)
+        spinner.adapter = locationsAdapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                val place = locationsAdapter.getItem(position) as ForecastPlace
+                showProgressBar()
+                mapView.getMapAsync {
+                    it.clear()
+                    it.addMarker(MarkerOptions().position(LatLng(place.latitude, place.longitude)))
+                }
+                viewModel.forecast(id)
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
             }
         }
-    }
-
-    private fun forecast() {
-        val editText = findViewById<EditText>(R.id.editText_location)
-        val imm: InputMethodManager =
-            this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(editText.windowToken, 0)
-        showProgressBar()
-        val location = editText.text.toString()
-        viewModel.forecast(location)
     }
 
     private fun showResults() {
