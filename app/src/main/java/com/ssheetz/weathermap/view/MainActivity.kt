@@ -16,6 +16,10 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
 import com.ssheetz.weathermap.model.ForecastPlace
 import dagger.hilt.android.AndroidEntryPoint
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+
+
+
 
 
 @AndroidEntryPoint
@@ -105,6 +109,18 @@ class MainActivity : AppCompatActivity() {
                 mapView.getMapAsync {
                     it.clear()
                     it.addMarker(MarkerOptions().position(LatLng(place.latitude, place.longitude)))
+
+                    // Move camera to selected location?
+                    if (!viewModel.changedSelection) {
+                        val camPosition = CameraPosition.Builder()
+                            .target(LatLng(place.latitude, place.longitude))
+                            .zoom(8.0)
+                            .build()
+                        it.animateCamera(
+                            CameraUpdateFactory.newCameraPosition(camPosition), 2000
+                        )
+                    }
+                    viewModel.changedSelection = false;
                 }
                 viewModel.forecast(id)
             }

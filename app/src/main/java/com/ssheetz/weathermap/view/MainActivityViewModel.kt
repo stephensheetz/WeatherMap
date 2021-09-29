@@ -16,6 +16,7 @@ class MainActivityViewModel @Inject constructor(
     private val repository: Repository): ViewModel() {
     private var resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
     private var savedLocationsLiveData: MutableLiveData<SavedLocations> = MutableLiveData()
+    var changedSelection: Boolean = false
 
     fun getResultsObserver() : LiveData<ForecastData> {
         return resultsLiveData
@@ -47,8 +48,10 @@ class MainActivityViewModel @Inject constructor(
             // Find newly created location?
             var currentPos = -1
             for (i in 0..locations.size-1) {
-                if (locations[i].id == it?.place?.id ?: -1)
+                if (locations[i].id == it?.place?.id ?: -1) {
                     currentPos = i
+                    changedSelection = true
+                }
             }
 
             savedLocationsLiveData.postValue(
