@@ -17,9 +17,7 @@ import com.ssheetz.weathermap.R
 import com.ssheetz.weathermap.model.ForecastPlace
 import dagger.hilt.android.AndroidEntryPoint
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-
-
-
+import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 
 
 @AndroidEntryPoint

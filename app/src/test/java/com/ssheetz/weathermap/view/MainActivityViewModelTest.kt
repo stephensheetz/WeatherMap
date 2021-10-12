@@ -6,6 +6,7 @@ import com.ssheetz.weathermap.model.ForecastData
 import com.ssheetz.weathermap.model.ForecastElement
 import com.ssheetz.weathermap.model.ForecastPlace
 import com.ssheetz.weathermap.repository.Repository
+import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -21,7 +22,7 @@ import org.mockito.kotlin.mock
 
 class MainActivityViewModelTest {
 
-    lateinit var viewModel:  MainActivityViewModel
+    lateinit var viewModel: MainActivityViewModel
     lateinit var searchObserver: Observer<ForecastData>
     lateinit var repository: Repository
     lateinit var sampleData: ForecastData
