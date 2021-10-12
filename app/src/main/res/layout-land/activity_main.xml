@@ -2,14 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ff1a1a"
-    android:orientation="vertical" >
+    android:orientation="horizontal">
 
     <fragment
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:name="com.ssheetz.weathermap.view.PrimaryFragment"
-        android:id="@+id/fragmentPrimary"
+        android:id="@+id/fragmentPrimary" />
+
+    <fragment
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:name="com.ssheetz.weathermap.view.DetailFragment"
+        android:id="@+id/fragmentDetail"
         android:layout_gravity="center_horizontal" />
 
 </LinearLayout>
