@@ -3,12 +3,15 @@ package com.ssheetz.weathermap.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ssheetz.weathermap.model.ForecastData
 import com.ssheetz.weathermap.model.SavedLocations
 import com.ssheetz.weathermap.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +27,7 @@ class MainActivityViewModel @Inject constructor(
 
     fun getSavedLocationsObserver() : LiveData<SavedLocations> {
         // Perform an initial sync with database for saved locations
-        runBlocking(Dispatchers.Default) {
+        CoroutineScope(Dispatchers.IO).launch {
             savedLocationsLiveData.postValue(SavedLocations(
                 repository.getSavedLocations(),
                 -1))
@@ -34,32 +37,36 @@ class MainActivityViewModel @Inject constructor(
 
     // Get forecast by known place ID
     fun forecast(location: Long) {
-        repository.forecast(location) {
-            resultsLiveData.postValue(it)
+        viewModelScope.launch {
+            repository.forecast(location).collect {
+                resultsLiveData.value = it
+            }
         }
     }
 
     // Get forecast by new lat/lng
     fun forecast(lat: Double, lon: Double) {
-        repository.forecast(lat, lon) {
-            resultsLiveData.postValue(it)
-            val locations = repository.getSavedLocations()
+        viewModelScope.launch {
+            repository.forecast(lat, lon).collect {
+                resultsLiveData.value = it
+                val locations = repository.getSavedLocations()
 
-            // Find newly created location?
-            var currentPos = -1
-            for (i in 0..locations.size-1) {
-                if (locations[i].id == it?.place?.id ?: -1) {
-                    currentPos = i
-                    changedSelection = true
+                // Find newly created location?
+                var currentPos = -1
+                for (i in 0..locations.size - 1) {
+                    if (locations[i].id == it?.place?.id ?: -1) {
+                        currentPos = i
+                        changedSelection = true
+                    }
                 }
-            }
 
-            savedLocationsLiveData.postValue(
-                SavedLocations(
-                locations,
-                currentPos
-            )
-            )
+                savedLocationsLiveData.postValue(
+                    SavedLocations(
+                        locations,
+                        currentPos
+                    )
+                )
+            }
         }
     }
 }

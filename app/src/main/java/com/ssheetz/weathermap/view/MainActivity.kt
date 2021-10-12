@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
 import com.ssheetz.weathermap.model.ForecastPlace
-import dagger.hilt.android.AndroidEntryPoint
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint

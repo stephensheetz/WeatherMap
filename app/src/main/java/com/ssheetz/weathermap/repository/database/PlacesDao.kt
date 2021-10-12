@@ -6,14 +6,14 @@ import com.ssheetz.weathermap.model.ForecastPlace
 @Dao
 interface PlacesDao {
     @Query("SELECT * FROM places ORDER BY name ASC")
-    fun getPlaces(): List<ForecastPlace>
+    suspend fun getPlaces(): List<ForecastPlace>
 
     @Query("SELECT * FROM places WHERE id LIKE :placeId")
-    fun getPlace(placeId: Long): ForecastPlace
+    suspend fun getPlace(placeId: Long): ForecastPlace
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertAll(vararg places: ForecastPlace)
+    suspend fun insertAll(vararg places: ForecastPlace)
 
     @Delete
-    fun delete(place: ForecastPlace)
+    suspend fun delete(place: ForecastPlace)
 }
