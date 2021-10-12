@@ -15,7 +15,7 @@
         android:labelFor="@id/spinner_locations"
         android:text="@string/saved_locations"
         app:layout_constraintRight_toLeftOf="@id/spinner_locations"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
@@ -34,7 +34,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@color/black"
-        app:layout_constraintBottom_toTopOf="@id/recyclerView_results"
         app:layout_constraintHeight_percent="0.5"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
