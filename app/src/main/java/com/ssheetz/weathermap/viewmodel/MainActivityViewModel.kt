@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssheetz.weathermap.model.ForecastData
+import com.ssheetz.weathermap.model.LoadingState
 import com.ssheetz.weathermap.model.MapState
 import com.ssheetz.weathermap.model.SavedLocations
 import com.ssheetz.weathermap.repository.Repository
@@ -19,6 +20,7 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     private val repository: Repository): ViewModel() {
     private var resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
+    private var loadingStateLiveData: MutableLiveData<LoadingState> = MutableLiveData()
     private var savedLocationsLiveData: MutableLiveData<SavedLocations> = MutableLiveData()
     private var mapStateLiveData: MutableLiveData<MapState> = MutableLiveData()
 
@@ -29,6 +31,10 @@ class MainActivityViewModel @Inject constructor(
 
     fun getResultsObserver() : LiveData<ForecastData> {
         return resultsLiveData
+    }
+
+    fun getLoadingStateObserver() : LiveData<LoadingState> {
+        return loadingStateLiveData
     }
 
     fun getSavedLocationsObserver() : LiveData<SavedLocations> {
@@ -51,6 +57,7 @@ class MainActivityViewModel @Inject constructor(
         viewModelScope.launch {
             repository.forecast(location).collect {
                 resultsLiveData.value = it
+                loadingStateLiveData.value = if (it?.forecasts?.isNotEmpty() ?: false) LoadingState.DONE else LoadingState.EMPTY
                 mapStateLiveData.value = if (it?.place != null) MapState(it.place.latitude, it.place.longitude, 8.0, true) else null
                 val places = savedLocationsLiveData.value?.places
                 savedLocationsLiveData.value = SavedLocations(places ?: emptyList(), savedLocationPos)
@@ -60,10 +67,12 @@ class MainActivityViewModel @Inject constructor(
 
     // Get forecast by new lat/lng
     fun forecast(lat: Double, lon: Double, zoom: Double) {
+        loadingStateLiveData.value = LoadingState.LOADING
         mapStateLiveData.value = MapState(lat, lon, Math.max(zoom, 8.0), true)
         viewModelScope.launch {
             repository.forecast(lat, lon).collect {
                 resultsLiveData.value = it
+                loadingStateLiveData.value = if (it?.forecasts?.isNotEmpty() ?: false) LoadingState.DONE else LoadingState.EMPTY
                 val locations = repository.getSavedLocations()
 
                 // Find newly created location?

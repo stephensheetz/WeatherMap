@@ -8,9 +8,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ssheetz.weathermap.R
 import com.ssheetz.weathermap.databinding.FragmentForecastBinding
+import com.ssheetz.weathermap.model.LoadingState
 import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 
 class ForecastFragment : Fragment() {
@@ -38,13 +38,19 @@ class ForecastFragment : Fragment() {
 
         viewModel?.let {
             it.getResultsObserver().observe(viewLifecycleOwner, {
-                if (it != null && it.forecasts.isNotEmpty()) {
+                if (it != null) {
                     forecastAdapter.setForecastResult(it)
                     forecastAdapter.notifyDataSetChanged()
-                    showResults()
                 } else {
-                    showNoResults()
                     Toast.makeText(requireActivity(), R.string.api_error, Toast.LENGTH_LONG).show()
+                }
+            })
+
+            it.getLoadingStateObserver().observe(viewLifecycleOwner, {loadingState ->
+                when(loadingState) {
+                    LoadingState.DONE -> showResults()
+                    LoadingState.EMPTY -> showNoResults()
+                    LoadingState.LOADING -> showProgressBar()
                 }
             })
         }
