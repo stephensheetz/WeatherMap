@@ -17,7 +17,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
-import com.ssheetz.weathermap.model.ForecastPlace
+import com.ssheetz.weathermap.model.MapState
 import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 
 class MapFragment : Fragment() {
@@ -47,7 +47,7 @@ class MapFragment : Fragment() {
             viewModel = ViewModelProvider(it).get(MainActivityViewModel::class.java)
         }
 
-        viewModel?.let {
+        viewModel?.let {vm ->
             val spinner = view.findViewById<Spinner>(R.id.spinner_locations)
             spinner.adapter = locationsAdapter
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -57,39 +57,16 @@ class MapFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    val place = locationsAdapter.getItem(position) as ForecastPlace
+                    //val place = locationsAdapter.getItem(position) as ForecastPlace
                     //showProgressBar()
-                    mapView.getMapAsync {
-                        it.clear()
-                        it.addMarker(
-                            MarkerOptions().position(
-                                LatLng(
-                                    place.latitude,
-                                    place.longitude
-                                )
-                            )
-                        )
-
-                        // Move camera to selected location?
-                        if (viewModel?.changedSelection == false) {
-                            val camPosition = CameraPosition.Builder()
-                                .target(LatLng(place.latitude, place.longitude))
-                                .zoom(8.0)
-                                .build()
-                            it.animateCamera(
-                                CameraUpdateFactory.newCameraPosition(camPosition), 2000
-                            )
-                        }
-                        viewModel?.changedSelection = false
-                    }
-                    viewModel?.forecast(id)
+                    vm.selectSavedLocation(id, position)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                 }
             }
 
-            it.getSavedLocationsObserver().observe(viewLifecycleOwner, {
+            vm.getSavedLocationsObserver().observe(viewLifecycleOwner, {
                 if (it != null) {
                     locationsAdapter.setLocations(it.places)
                     locationsAdapter.notifyDataSetChanged()
@@ -103,23 +80,42 @@ class MapFragment : Fragment() {
 
         mapView = view.findViewById(R.id.mapbox_view)
         mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync {
-            val mapboxMap = it
-            it.setStyle(Style.MAPBOX_STREETS) {
+        mapView.getMapAsync {mapboxMap ->
+            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded.
-                //Now you can add data or make other map adjustmentsit.
-                mapboxMap.cameraPosition = CameraPosition.Builder()
-                    .target(LatLng(40.0, -96.0))
-                    .zoom(2.0)
-                    .build()
 
                 mapboxMap.addOnMapClickListener { point ->
                     //showProgressBar()
-                    mapboxMap.clear()
-                    mapboxMap.addMarker(MarkerOptions().position(point))
-                    viewModel?.forecast(point.latitude, point.longitude)
+                    viewModel?.forecast(
+                        point.latitude,
+                        point.longitude,
+                        mapboxMap.cameraPosition.zoom
+                    )
                     true
                 }
+
+                viewModel?.getMapStateObserver()?.observe(viewLifecycleOwner, { mapState: MapState ->
+                    mapboxMap.clear()
+                    if (mapState.hasMarker) {
+                        mapboxMap.addMarker(
+                            MarkerOptions().position(
+                                LatLng(
+                                    mapState.latitude,
+                                    mapState.longitude
+                                )
+                            )
+                        )
+                    }
+
+                    // Move camera to selected location?
+                    val camPosition = CameraPosition.Builder()
+                        .target(LatLng(mapState.latitude, mapState.longitude))
+                        .zoom(mapState.zoom)
+                        .build()
+                    mapboxMap.animateCamera(
+                        CameraUpdateFactory.newCameraPosition(camPosition), 2000
+                    )
+                })
             }
         }
     }

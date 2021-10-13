@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssheetz.weathermap.model.ForecastData
+import com.ssheetz.weathermap.model.MapState
 import com.ssheetz.weathermap.model.SavedLocations
 import com.ssheetz.weathermap.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,7 +20,12 @@ class MainActivityViewModel @Inject constructor(
     private val repository: Repository): ViewModel() {
     private var resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
     private var savedLocationsLiveData: MutableLiveData<SavedLocations> = MutableLiveData()
-    var changedSelection: Boolean = false
+    private var mapStateLiveData: MutableLiveData<MapState> = MutableLiveData()
+
+    init {
+        // Default map position: center over the U.S.
+        mapStateLiveData.value = MapState(40.0, -96.0, 2.0, false)
+    }
 
     fun getResultsObserver() : LiveData<ForecastData> {
         return resultsLiveData
@@ -35,17 +41,26 @@ class MainActivityViewModel @Inject constructor(
         return savedLocationsLiveData
     }
 
+    fun getMapStateObserver() : LiveData<MapState> {
+        return mapStateLiveData
+    }
+
     // Get forecast by known place ID
-    fun forecast(location: Long) {
+    // Move map and zoom to level 8.0
+    fun selectSavedLocation(location: Long, savedLocationPos: Int) {
         viewModelScope.launch {
             repository.forecast(location).collect {
                 resultsLiveData.value = it
+                mapStateLiveData.value = if (it?.place != null) MapState(it.place.latitude, it.place.longitude, 8.0, true) else null
+                val places = savedLocationsLiveData.value?.places
+                savedLocationsLiveData.value = SavedLocations(places ?: emptyList(), savedLocationPos)
             }
         }
     }
 
     // Get forecast by new lat/lng
-    fun forecast(lat: Double, lon: Double) {
+    fun forecast(lat: Double, lon: Double, zoom: Double) {
+        mapStateLiveData.value = MapState(lat, lon, Math.max(zoom, 8.0), true)
         viewModelScope.launch {
             repository.forecast(lat, lon).collect {
                 resultsLiveData.value = it
@@ -56,7 +71,6 @@ class MainActivityViewModel @Inject constructor(
                 for (i in 0..locations.size - 1) {
                     if (locations[i].id == it?.place?.id ?: -1) {
                         currentPos = i
-                        changedSelection = true
                     }
                 }
 
