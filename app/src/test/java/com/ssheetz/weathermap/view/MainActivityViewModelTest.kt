@@ -51,7 +51,7 @@ class MainActivityViewModelTest {
     @Test
     fun forecastReceivesCallbackWithForecasts() {
         viewModel.getResultsObserver().observeForever(searchObserver)
-        viewModel.forecast(-45.1, 44.1)
+        viewModel.forecast(-45.1, 44.1, 7.0)
 
         val arg = ArgumentCaptor.forClass(ForecastData::class.java)
         verify(searchObserver).onChanged(arg.capture())

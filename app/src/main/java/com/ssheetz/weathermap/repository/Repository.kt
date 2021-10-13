@@ -5,14 +5,14 @@ import com.ssheetz.weathermap.model.ForecastElement
 import com.ssheetz.weathermap.model.ForecastPlace
 import com.ssheetz.weathermap.repository.database.WeatherDatabase
 import com.ssheetz.weathermap.repository.openweather.OpenWeatherRetrofitService
-import com.ssheetz.weathermap.repository.openweather.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.Retrofit
 
 
-class Repository (private val database: WeatherDatabase) {
+class Repository (private val database: WeatherDatabase, private val retrofit: Retrofit) {
 
     fun forecast(placeid: Long) : Flow<ForecastData?> {
         return flow {
@@ -23,7 +23,7 @@ class Repository (private val database: WeatherDatabase) {
     }
 
     fun forecast(lat: Double, lon: Double)  : Flow<ForecastData?> {
-        val retrofit = RetrofitInstance.getInstance().create(OpenWeatherRetrofitService::class.java)
+        val retrofit = retrofit.create(OpenWeatherRetrofitService::class.java)
         return flow {
             // exectute API call and map to model object
             try {
