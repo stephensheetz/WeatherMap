@@ -44,7 +44,8 @@ class RepositoryTest {
         searchResponse = Response.success(
             ForecastResult(listOf(
             ForecastEntry(1200,
-                listOf(ForecastWeather("some conditions", "someicon.png")),
+                ForecastMain(75.1f, 74.0f, 1000.4f, 45.6f),
+                listOf(ForecastWeather("main name", "some conditions", "someicon.png")),
                 ForecastWind(12.2f, 220.0f)
             )
         ), ForecastCity(123, "some city", -75.0, 35.5)

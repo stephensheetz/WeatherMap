@@ -38,7 +38,7 @@ class MainActivityViewModelTest {
 
         sampleData = ForecastData(
             ForecastPlace(123, "some city", -88.1, 33.5), listOf(
-            ForecastElement(0, 123, 1002, "some weather conditions", "someicon.png", 23.1f, 223.0f)
+            ForecastElement(0, 123, 1002, "mainname", "some weather conditions", "someicon.png", 44.4f, 33.3f, 950f,77f, 23.1f, 223.0f)
         ))
 
         Mockito.`when`(repository.forecast(anyDouble(), anyDouble())).thenReturn(flow{ emit(sampleData) })

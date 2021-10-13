@@ -41,8 +41,13 @@ class Repository (private val database: WeatherDatabase, private val retrofit: R
                             0,
                             place.id,
                             entry.dt,
+                            entry.weather[0].main,
                             entry.weather[0].description,
                             entry.weather[0].icon,
+                            entry.main.temp,
+                            entry.main.feels_like,
+                            entry.main.pressure,
+                            entry.main.humidity,
                             entry.wind.speed,
                             entry.wind.deg
                         )
