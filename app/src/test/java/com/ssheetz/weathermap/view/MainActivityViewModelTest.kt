@@ -7,6 +7,7 @@ import com.ssheetz.weathermap.model.ForecastElement
 import com.ssheetz.weathermap.model.ForecastPlace
 import com.ssheetz.weathermap.repository.Repository
 import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
+import kotlinx.coroutines.flow.flow
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -14,9 +15,7 @@ import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito
 import org.mockito.Mockito.anyDouble
-import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 
 
@@ -42,24 +41,24 @@ class MainActivityViewModelTest {
             ForecastElement(0, 123, 1002, "some weather conditions", "someicon.png", 23.1f, 223.0f)
         ))
 
-        val captor = argumentCaptor<(ForecastData?) -> Unit>()
-        Mockito.`when`(repository.forecast(anyDouble(), anyDouble(), captor.capture()))
-            .then { captor.firstValue.invoke(sampleData) }
+        Mockito.`when`(repository.forecast(anyDouble(), anyDouble())).thenReturn(flow{ emit(sampleData) })
     }
 
 
     @Test
-    fun forecastReceivesCallbackWithForecasts() {
+    fun forecastUpdatesLiveDataWithForecastFromRepository() {
+        val arg = ArgumentCaptor.forClass(ForecastData::class.java)
+        //verify(searchObserver).onChanged(arg.capture())
         viewModel.getResultsObserver().observeForever(searchObserver)
+
         viewModel.forecast(-45.1, 44.1, 7.0)
 
-        val arg = ArgumentCaptor.forClass(ForecastData::class.java)
-        verify(searchObserver).onChanged(arg.capture())
-
-        val forecasts = arg.allValues[0].forecasts
-        val place = arg.allValues[0].place
-        assertEquals(1, forecasts.size)
-        assertEquals(123, place.id)
+        val forecasts = viewModel.getResultsObserver().value?.forecasts
+        val place = viewModel.getResultsObserver().value?.place
+        //val forecasts = arg.allValues[0].forecasts
+        //val place = arg.allValues[0].place
+        assertEquals(1, forecasts?.size)
+        assertEquals(123, place?.id)
     }
 }
 

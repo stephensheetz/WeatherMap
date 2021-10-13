@@ -58,49 +58,6 @@ class Repository (private val database: WeatherDatabase, private val retrofit: R
         }.flowOn(Dispatchers.IO) // Use the IO thread for this Flow
     }
 
-
-    /*
-        return flow {
-            val retrofit = RetrofitInstance.getInstance().create(OpenWeatherRetrofitService::class.java)
-            val call = retrofit.forecast(lat, lon, OpenWeatherRetrofitService.appid)
-            call.enqueue(object : retrofit2.Callback<ForecastResult> {
-                override fun onResponse(call: Call<ForecastResult>, response: Response<ForecastResult>) {
-                    if (response.isSuccessful) {
-                        val entries = ArrayList<ForecastElement>()
-                        val place = ForecastPlace(
-                            response.body()?.city?.id ?: 0,
-                        response.body()?.city?.name ?: "",
-                            lat,
-                            lon)
-                        for (entry in response.body()?.list ?: emptyList()) {
-                            entries.add(
-                                ForecastElement(
-                            0,
-                                place.id,
-                                entry.dt,
-                                entry.weather[0].description,
-                                entry.weather[0].icon,
-                                entry.wind.speed,
-                                entry.wind.deg
-                            )
-                        )
-                    }
-                    runBlocking(Dispatchers.Default) {
-                        database.placesDao().insertAll(place)
-                        database.forecastDao().insertAll(entries)
-                        emit(ForecastData(place, entries))
-                    }
-                } else {
-                    emit(null)
-                }
-            }
-            override fun onFailure(call: Call<ForecastResult>, t: Throwable) {
-                callback(null)
-            }
-        })
-    }
-*/
-
     suspend fun getSavedLocations() : List<ForecastPlace> {
         return database.placesDao().getPlaces()
     }
