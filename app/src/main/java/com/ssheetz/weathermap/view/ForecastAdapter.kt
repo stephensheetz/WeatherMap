@@ -1,6 +1,5 @@
 package com.ssheetz.weathermap.view
 
-import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ssheetz.weathermap.R
-import com.ssheetz.weathermap.model.*
+import com.ssheetz.weathermap.model.ForecastData
+import com.ssheetz.weathermap.model.ForecastElement
 import java.text.SimpleDateFormat
 
 
@@ -66,7 +66,7 @@ class ForecastAdapter() : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder
             val imageUrl = "https://openweathermap.org/img/wn/${data.icon}@2x.png"
             Glide.with(imageViewThumb).load(imageUrl).into(imageViewThumb)
 
-            // Launch something upon tap?
+            // Launch details activity
             rowView.setOnClickListener {v ->
                 val intent = Intent(v.context, DetailActivity::class.java)
                 intent.putExtra(DetailActivity.EXTRA_PLACE_ID, data.placeId)

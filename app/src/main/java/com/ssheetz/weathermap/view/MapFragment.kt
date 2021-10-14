@@ -15,6 +15,7 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.ssheetz.weathermap.R
 import com.ssheetz.weathermap.model.MapState
@@ -47,7 +48,7 @@ class MapFragment : Fragment() {
             viewModel = ViewModelProvider(it).get(MainActivityViewModel::class.java)
         }
 
-        viewModel?.let {vm ->
+        viewModel?.let { vm ->
             val spinner = view.findViewById<Spinner>(R.id.spinner_locations)
             spinner.adapter = locationsAdapter
             spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -57,8 +58,6 @@ class MapFragment : Fragment() {
                     position: Int,
                     id: Long
                 ) {
-                    //val place = locationsAdapter.getItem(position) as ForecastPlace
-                    //showProgressBar()
                     vm.selectSavedLocation(id, position)
                 }
 
@@ -80,44 +79,47 @@ class MapFragment : Fragment() {
 
         mapView = view.findViewById(R.id.mapbox_view)
         mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync {mapboxMap ->
+        mapView.getMapAsync { mapboxMap ->
             mapboxMap.setStyle(Style.MAPBOX_STREETS) {
                 // Map is set up and the style has loaded.
-
-                mapboxMap.addOnMapClickListener { point ->
-                    //showProgressBar()
-                    viewModel?.tapNewLocation(
-                        point.latitude,
-                        point.longitude,
-                        mapboxMap.cameraPosition.zoom
-                    )
-                    true
-                }
-
-                viewModel?.getMapStateObserver()?.observe(viewLifecycleOwner, { mapState: MapState ->
-                    mapboxMap.clear()
-                    if (mapState.hasMarker) {
-                        mapboxMap.addMarker(
-                            MarkerOptions().position(
-                                LatLng(
-                                    mapState.latitude,
-                                    mapState.longitude
-                                )
-                            )
-                        )
-                    }
-
-                    // Move camera to selected location?
-                    val camPosition = CameraPosition.Builder()
-                        .target(LatLng(mapState.latitude, mapState.longitude))
-                        .zoom(mapState.zoom)
-                        .build()
-                    mapboxMap.animateCamera(
-                        CameraUpdateFactory.newCameraPosition(camPosition), 2000
-                    )
-                })
+                setupMap(mapboxMap)
             }
         }
+    }
+
+    private fun setupMap(mapboxMap: MapboxMap) {
+        mapboxMap.addOnMapClickListener { point ->
+            //showProgressBar()
+            viewModel?.tapNewLocation(
+                point.latitude,
+                point.longitude,
+                mapboxMap.cameraPosition.zoom
+            )
+            true
+        }
+
+        viewModel?.getMapStateObserver()?.observe(viewLifecycleOwner, { mapState: MapState ->
+            mapboxMap.clear()
+            if (mapState.hasMarker) {
+                mapboxMap.addMarker(
+                    MarkerOptions().position(
+                        LatLng(
+                            mapState.latitude,
+                            mapState.longitude
+                        )
+                    )
+                )
+            }
+
+            // Move camera to selected location?
+            val camPosition = CameraPosition.Builder()
+                .target(LatLng(mapState.latitude, mapState.longitude))
+                .zoom(mapState.zoom)
+                .build()
+            mapboxMap.animateCamera(
+                CameraUpdateFactory.newCameraPosition(camPosition), 2000
+            )
+        })
     }
 
     override fun onStart() {

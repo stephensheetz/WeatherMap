@@ -14,6 +14,7 @@ import retrofit2.Retrofit
 
 class Repository (private val database: WeatherDatabase, private val retrofit: Retrofit) {
 
+    // Fetch the forecast for a known location by place id from local database
     fun forecast(placeid: Long) : Flow<ForecastData?> {
         return flow {
             val elements = database.forecastDao().getForecasts(placeid)
@@ -22,6 +23,7 @@ class Repository (private val database: WeatherDatabase, private val retrofit: R
         }
     }
 
+    // Fetch the forecast for a place by lat/lon from OpenWeather.com and also store it in database
     fun forecast(lat: Double, lon: Double)  : Flow<ForecastData?> {
         val retrofit = retrofit.create(OpenWeatherRetrofitService::class.java)
         return flow {
@@ -63,6 +65,7 @@ class Repository (private val database: WeatherDatabase, private val retrofit: R
         }.flowOn(Dispatchers.IO) // Use the IO thread for this Flow
     }
 
+    // Fetch a list of all places stored in the local database
     suspend fun getSavedLocations() : List<ForecastPlace> {
         return database.placesDao().getPlaces()
     }
