@@ -25,7 +25,7 @@ class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewBinding = ActivityDetailBinding.inflate(layoutInflater)
-        setContentView(viewBinding!!.root)
+        setContentView(viewBinding.root)
         setTitle(R.string.main_title)
         viewModel = ViewModelProvider(this).get(DetailActivityViewModel::class.java)
 
@@ -37,7 +37,7 @@ class DetailActivity : AppCompatActivity() {
             Glide.with(viewBinding.imgWeather).load(imageUrl).into(viewBinding.imgWeather)
 
             // Format forecast time
-            val simpleDateFormat = SimpleDateFormat("EEEE\nhh:mm aaa")
+            val simpleDateFormat = SimpleDateFormat("EEEE hh:mm aaa")
             val dateTime = simpleDateFormat.format(forecast.timeUnixUTC * 1000).toString()
             viewBinding.tvTime.text = dateTime
 
@@ -46,7 +46,7 @@ class DetailActivity : AppCompatActivity() {
             viewBinding.tvLongitude.text = data.place.longitude.toString()
             viewBinding.tvDescription.text = forecast.description
             viewBinding.tvTemperature.text = forecast.temp.toString() + " K"
-            viewBinding.tvFeelsLike.text = forecast.feels_like.toString() + "K"
+            viewBinding.tvFeelsLike.text = forecast.feels_like.toString() + " K"
             viewBinding.tvPressure.text = forecast.pressure.toString() + " bar"
             viewBinding.tvHumidity.text = forecast.humidity.toString() + " %"
             viewBinding.tvWindSpeed.text = " %.1f m/s".format(forecast.windSpeed)

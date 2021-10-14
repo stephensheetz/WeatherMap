@@ -55,7 +55,7 @@ class ForecastAdapter() : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder
                 .appendLine()
                 .append(rowView.context.getString(R.string.temperature))
                 .append(": %.1f".format(data.temp))
-                .appendLine()
+                .append( "K").appendLine()
                 .append(rowView.context.getString(R.string.wind_speed))
                 .append(": %.1f".format(data.windSpeed))
                 .append(" m/s\n")

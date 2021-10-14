@@ -8,10 +8,12 @@
     <TextView
         android:id="@+id/textView_daytime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_gravity="center"
         android:layout_marginStart="10dp"
+        android:gravity="center_vertical"
         style="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:textSize="16sp"
         tools:text="Day / Time"
         />
 
@@ -19,16 +21,19 @@
         android:id="@+id/imageView_thumbnail"
         android:layout_width="80dp"
         android:layout_height="80dp"
+        android:layout_gravity="center"
         tools:src="@android:drawable/ic_menu_search"
         />
 
     <TextView
         android:id="@+id/textView_description"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_gravity="center_vertical|start"
         android:layout_marginStart="0dp"
+        android:gravity="center_vertical"
         style="@android:style/TextAppearance.DeviceDefault.Medium"
+        android:textSize="16sp"
         tools:text="Weather description"
         />
 
