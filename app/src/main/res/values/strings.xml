@@ -5,8 +5,14 @@
     <string name="query_hint">Select city</string>
     <string name="no_results">No forecast to show</string>
     <string name="api_error">Problem fetching the forecast</string>
-    <string name="wind_speed">Wind speed:</string>
-    <string name="wind_direction">Direction:</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="wind_direction">Direction</string>
+    <string name="latitude">Latitude</string>
+    <string name="longitude">Longitude</string>
+    <string name="temperature">Temperature</string>
+    <string name="feels_like">Feels like</string>
+    <string name="pressure">Pressure</string>
+    <string name="humidity">Humidity</string>
 
     <string name="mapbox_access_token" translatable="false">pk.eyJ1Ijoic3NoZWV0ejc4IiwiYSI6ImNrdTQxZnl4ZTFneWwydnFyYmtmcDk3dmEifQ.aa-WLGMDfZV7EMK0l0Cd-Q</string>
 

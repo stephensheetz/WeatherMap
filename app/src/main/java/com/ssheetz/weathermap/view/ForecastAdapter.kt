@@ -53,12 +53,12 @@ class ForecastAdapter() : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder
             val desc = StringBuilder()
                 .append(data.description)
                 .appendLine()
+                .append(rowView.context.getString(R.string.temperature))
+                .append(": %.1f".format(data.temp))
+                .appendLine()
                 .append(rowView.context.getString(R.string.wind_speed))
-                .append(" %.1f".format(data.windSpeed))
+                .append(": %.1f".format(data.windSpeed))
                 .append(" m/s\n")
-                .append(rowView.context.getString(R.string.wind_direction))
-                .append(" %.0f".format(data.windDirection))
-                .append(" degrees")
                 .toString()
             textViewDecription.text = desc
 
