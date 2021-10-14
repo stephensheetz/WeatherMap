@@ -86,7 +86,7 @@ class MapFragment : Fragment() {
 
                 mapboxMap.addOnMapClickListener { point ->
                     //showProgressBar()
-                    viewModel?.forecast(
+                    viewModel?.tapNewLocation(
                         point.latitude,
                         point.longitude,
                         mapboxMap.cameraPosition.zoom

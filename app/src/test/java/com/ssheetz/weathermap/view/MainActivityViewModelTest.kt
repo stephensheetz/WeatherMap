@@ -51,7 +51,7 @@ class MainActivityViewModelTest {
         //verify(searchObserver).onChanged(arg.capture())
         viewModel.getResultsObserver().observeForever(searchObserver)
 
-        viewModel.forecast(-45.1, 44.1, 7.0)
+        viewModel.tapNewLocation(-45.1, 44.1, 7.0)
 
         val forecasts = viewModel.getResultsObserver().value?.forecasts
         val place = viewModel.getResultsObserver().value?.place

@@ -1,5 +1,7 @@
 package com.ssheetz.weathermap.view
 
+import android.app.Activity
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +14,7 @@ import com.ssheetz.weathermap.model.*
 import java.text.SimpleDateFormat
 
 
-class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder>() {
+class ForecastAdapter() : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder>() {
 
     private var forecastData : ForecastData? = null
 
@@ -21,8 +23,8 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder>(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ResultsViewHolder {
-        val inflater = LayoutInflater.from(parent.context).inflate(R.layout.forecast_row, parent, false)
-        return ResultsViewHolder(inflater)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.forecast_row, parent, false)
+        return ResultsViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ResultsViewHolder, position: Int) {
@@ -35,11 +37,10 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder>(
         return forecastData?.forecasts?.size ?: 0
     }
 
-    class ResultsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val rowView = view
-        private val textViewDayTime: TextView = view.findViewById(R.id.textView_daytime)
-        private val textViewDecription: TextView = view.findViewById(R.id.textView_description)
-        private val imageViewThumb: ImageView = view.findViewById(R.id.imageView_thumbnail)
+    class ResultsViewHolder(private val rowView: View) : RecyclerView.ViewHolder(rowView) {
+        private val textViewDayTime: TextView = rowView.findViewById(R.id.textView_daytime)
+        private val textViewDecription: TextView = rowView.findViewById(R.id.textView_description)
+        private val imageViewThumb: ImageView = rowView.findViewById(R.id.imageView_thumbnail)
 
         fun bind(data: ForecastElement) {
 
@@ -67,7 +68,10 @@ class ForecastAdapter : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder>(
 
             // Launch something upon tap?
             rowView.setOnClickListener {v ->
-
+                val intent = Intent(v.context, DetailActivity::class.java)
+                intent.putExtra(DetailActivity.EXTRA_PLACE_ID, data.placeId)
+                intent.putExtra(DetailActivity.EXTRA_TIMESTAMP, data.timeUnixUTC)
+                v.context.startActivity(intent)
             }
         }
     }

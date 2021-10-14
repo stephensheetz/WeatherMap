@@ -49,7 +49,7 @@ class ForecastFragment : Fragment() {
             it.getLoadingStateObserver().observe(viewLifecycleOwner, {loadingState ->
                 when(loadingState) {
                     LoadingState.DONE -> showResults()
-                    LoadingState.EMPTY -> showNoResults()
+                    LoadingState.EMPTY, null -> showNoResults()
                     LoadingState.LOADING -> showProgressBar()
                 }
             })

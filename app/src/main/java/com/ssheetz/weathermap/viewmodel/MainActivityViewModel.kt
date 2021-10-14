@@ -66,7 +66,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     // Get forecast by new lat/lng
-    fun forecast(lat: Double, lon: Double, zoom: Double) {
+    fun tapNewLocation(lat: Double, lon: Double, zoom: Double) {
         loadingStateLiveData.value = LoadingState.LOADING
         mapStateLiveData.value = MapState(lat, lon, Math.max(zoom, 8.0), true)
         viewModelScope.launch {
