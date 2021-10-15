@@ -23,7 +23,7 @@ import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 
 class MapFragment : Fragment() {
 
-    private var viewModel: MainActivityViewModel? = null
+    private lateinit var viewModel: MainActivityViewModel
     private val locationsAdapter = LocationsAdapter()
     private lateinit var mapView: MapView
 
@@ -44,38 +44,34 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.let {
-            viewModel = ViewModelProvider(it).get(MainActivityViewModel::class.java)
-        }
+        viewModel = ViewModelProvider(requireActivity()).get(MainActivityViewModel::class.java)
 
-        viewModel?.let { vm ->
-            val spinner = view.findViewById<Spinner>(R.id.spinner_locations)
-            spinner.adapter = locationsAdapter
-            spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View,
-                    position: Int,
-                    id: Long
-                ) {
-                    vm.selectSavedLocation(id, position)
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
+        val spinner = view.findViewById<Spinner>(R.id.spinner_locations)
+        spinner.adapter = locationsAdapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>,
+                view: View,
+                position: Int,
+                id: Long
+            ) {
+                viewModel.selectSavedLocation(id, position)
             }
 
-            vm.getSavedLocationsObserver().observe(viewLifecycleOwner, {
-                if (it != null) {
-                    locationsAdapter.setLocations(it.places)
-                    locationsAdapter.notifyDataSetChanged()
-                    if (it.currentPos > -1) {
-                        val spinner = getView()?.findViewById<Spinner>(R.id.spinner_locations)
-                        spinner?.setSelection(it.currentPos)
-                    }
-                }
-            })
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
         }
+
+        viewModel.getSavedLocationsObserver().observe(viewLifecycleOwner, {
+            if (it != null) {
+                locationsAdapter.setLocations(it.places)
+                locationsAdapter.notifyDataSetChanged()
+                if (it.currentPos > -1) {
+                    val spinner = getView()?.findViewById<Spinner>(R.id.spinner_locations)
+                    spinner?.setSelection(it.currentPos)
+                }
+            }
+        })
 
         mapView = view.findViewById(R.id.mapbox_view)
         mapView.onCreate(savedInstanceState)
@@ -89,8 +85,7 @@ class MapFragment : Fragment() {
 
     private fun setupMap(mapboxMap: MapboxMap) {
         mapboxMap.addOnMapClickListener { point ->
-            //showProgressBar()
-            viewModel?.tapNewLocation(
+            viewModel.tapNewLocation(
                 point.latitude,
                 point.longitude,
                 mapboxMap.cameraPosition.zoom
@@ -98,7 +93,7 @@ class MapFragment : Fragment() {
             true
         }
 
-        viewModel?.getMapStateObserver()?.observe(viewLifecycleOwner, { mapState: MapState ->
+        viewModel.getMapStateObserver().observe(viewLifecycleOwner, { mapState: MapState ->
             mapboxMap.clear()
             if (mapState.hasMarker) {
                 mapboxMap.addMarker(

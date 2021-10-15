@@ -15,9 +15,9 @@ import com.ssheetz.weathermap.viewmodel.MainActivityViewModel
 
 class ForecastFragment : Fragment() {
 
-    private var viewModel: MainActivityViewModel? = null
+    private lateinit var viewModel: MainActivityViewModel
     private val forecastAdapter = ForecastAdapter()
-    private var viewBinding: FragmentForecastBinding? = null
+    private var viewBinding : FragmentForecastBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,28 +32,24 @@ class ForecastFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        activity?.let {
-            viewModel = ViewModelProvider(it).get(MainActivityViewModel::class.java)
-        }
+        viewModel = ViewModelProvider(requireActivity()).get(MainActivityViewModel::class.java)
+        
+        viewModel.getResultsObserver().observe(viewLifecycleOwner, {
+            if (it != null) {
+                forecastAdapter.setForecastResult(it)
+                forecastAdapter.notifyDataSetChanged()
+            } else {
+                Toast.makeText(requireActivity(), R.string.api_error, Toast.LENGTH_LONG).show()
+            }
+        })
 
-        viewModel?.let {
-            it.getResultsObserver().observe(viewLifecycleOwner, {
-                if (it != null) {
-                    forecastAdapter.setForecastResult(it)
-                    forecastAdapter.notifyDataSetChanged()
-                } else {
-                    Toast.makeText(requireActivity(), R.string.api_error, Toast.LENGTH_LONG).show()
-                }
-            })
-
-            it.getLoadingStateObserver().observe(viewLifecycleOwner, {loadingState ->
-                when(loadingState) {
-                    LoadingState.DONE -> showResults()
-                    LoadingState.EMPTY, null -> showNoResults()
-                    LoadingState.LOADING -> showProgressBar()
-                }
-            })
-        }
+        viewModel.getLoadingStateObserver().observe(viewLifecycleOwner, {loadingState ->
+            when(loadingState) {
+                LoadingState.DONE -> showResults()
+                LoadingState.EMPTY, null -> showNoResults()
+                LoadingState.LOADING -> showProgressBar()
+            }
+        })
 
         viewBinding?.recyclerViewResults?.apply {
             layoutManager = LinearLayoutManager(requireContext())
