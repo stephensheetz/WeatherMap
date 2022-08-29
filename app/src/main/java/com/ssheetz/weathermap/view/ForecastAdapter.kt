@@ -73,6 +73,20 @@ class ForecastAdapter() : RecyclerView.Adapter<ForecastAdapter.ResultsViewHolder
                 intent.putExtra(DetailActivity.EXTRA_TIMESTAMP, data.timeUnixUTC)
                 v.context.startActivity(intent)
             }
+
+            // Launch share options
+            rowView.setOnLongClickListener {v ->
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    val weatherText = String.format("It's %s and %.1f degrees out",
+                        data.mainName, data.temp)
+                    putExtra(Intent.EXTRA_TEXT, weatherText)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, null)
+                v.context.startActivity(shareIntent)
+                true
+            }
         }
     }
 }

@@ -15,7 +15,8 @@
     <string name="humidity">Humidity</string>
     <string name="instructions">Tap on the map to save a new location and fetch its 5 day / 3 hour forecast.\n\n
         Select previous locations from the drop-down menu.\n\n
-        Tap on a forecast to get more detail.
+        Tap on a forecast to get more detail.\n\n
+        Long-press on a forecast to share it.
     </string>
 
     <string name="mapbox_access_token" translatable="false">pk.eyJ1Ijoic3NoZWV0ejc4IiwiYSI6ImNrdTQxZnl4ZTFneWwydnFyYmtmcDk3dmEifQ.aa-WLGMDfZV7EMK0l0Cd-Q</string>
