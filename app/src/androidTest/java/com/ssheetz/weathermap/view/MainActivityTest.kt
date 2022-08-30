@@ -2,6 +2,7 @@ package com.ssheetz.weathermap.view
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -22,6 +23,9 @@ class MainActivityTest {
 
     @Test
     fun testClickMapPopulatesForecasts() {
+        // Dismiss instructions dialog
+        Espresso.pressBack()
+
         onView(withId(R.id.mapbox_view))
             .perform(ViewActions.click())
 

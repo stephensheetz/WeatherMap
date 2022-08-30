@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
 
         // Show instructions first time after launch?
-        //if (savedInstanceState == null) {
+        if (savedInstanceState == null) {
         //val prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE)
         //if (!(prefs.contains("sawHelp"))) {
             AlertDialog.Builder(this)
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
                 .create()
                 .show()
         //    prefs.edit().putBoolean("sawHelp", true).apply()
-        //}
+        }
     }
 
 }
