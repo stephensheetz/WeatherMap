@@ -34,22 +34,22 @@ class ForecastFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity()).get(MainActivityViewModel::class.java)
         
-        viewModel.getResultsObserver().observe(viewLifecycleOwner, {
+        viewModel.getResultsObserver().observe(viewLifecycleOwner) {
             if (it != null) {
                 forecastAdapter.setForecastResult(it)
                 forecastAdapter.notifyDataSetChanged()
             } else {
                 Toast.makeText(requireActivity(), R.string.api_error, Toast.LENGTH_LONG).show()
             }
-        })
+        }
 
-        viewModel.getLoadingStateObserver().observe(viewLifecycleOwner, {loadingState ->
-            when(loadingState) {
+        viewModel.getLoadingStateObserver().observe(viewLifecycleOwner) { loadingState ->
+            when (loadingState) {
                 LoadingState.DONE -> showResults()
                 LoadingState.EMPTY, null -> showNoResults()
                 LoadingState.LOADING -> showProgressBar()
             }
-        })
+        }
 
         viewBinding?.recyclerViewResults?.apply {
             layoutManager = LinearLayoutManager(requireContext())

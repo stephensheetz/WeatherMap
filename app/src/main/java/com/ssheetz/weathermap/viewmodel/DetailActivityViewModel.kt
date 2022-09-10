@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.ssheetz.weathermap.model.ForecastData
 import com.ssheetz.weathermap.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,9 +24,9 @@ class DetailActivityViewModel @Inject constructor(
         viewModelScope.launch {
             repository.forecast(location).collect { flowed ->
                 // find only the requested timestamp
-                flowed?.let { data ->
+                flowed.data?.let { data ->
                     data.forecasts.find { elem -> elem.timeUnixUTC == timestamp }?.let {
-                        resultsLiveData.value = ForecastData(flowed.place, listOf(it))
+                        resultsLiveData.value = ForecastData(data.place, listOf(it))
                     }
                 }
             }

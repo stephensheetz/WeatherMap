@@ -12,7 +12,6 @@ import com.ssheetz.weathermap.repository.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -56,9 +55,9 @@ class MainActivityViewModel @Inject constructor(
     fun selectSavedLocation(location: Long, savedLocationPos: Int) {
         viewModelScope.launch {
             repository.forecast(location).collect {
-                resultsLiveData.value = it
-                loadingStateLiveData.value = if (it?.forecasts?.isNotEmpty() ?: false) LoadingState.DONE else LoadingState.EMPTY
-                mapStateLiveData.value = if (it?.place != null) MapState(it.place.latitude, it.place.longitude, 8.0, true) else null
+                resultsLiveData.value = it.data
+                loadingStateLiveData.value = if (it.data?.forecasts?.isNotEmpty() == true) LoadingState.DONE else LoadingState.EMPTY
+                mapStateLiveData.value = if (it.data?.place != null) MapState(it.data.place.latitude, it.data.place.longitude, 8.0, true) else null
                 val places = savedLocationsLiveData.value?.places
                 savedLocationsLiveData.value = SavedLocations(places ?: emptyList(), savedLocationPos)
             }
@@ -71,14 +70,14 @@ class MainActivityViewModel @Inject constructor(
         mapStateLiveData.value = MapState(lat, lon, Math.max(zoom, 8.0), true)
         viewModelScope.launch {
             repository.forecast(lat, lon).collect {
-                resultsLiveData.value = it
-                loadingStateLiveData.value = if (it?.forecasts?.isNotEmpty() ?: false) LoadingState.DONE else LoadingState.EMPTY
+                resultsLiveData.value = it.data
+                loadingStateLiveData.value = if (it.data?.forecasts?.isNotEmpty() == true) LoadingState.DONE else LoadingState.EMPTY
                 val locations = repository.getSavedLocations()
 
                 // Find newly created location?
                 var currentPos = -1
-                for (i in 0..locations.size - 1) {
-                    if (locations[i].id == it?.place?.id ?: -1) {
+                for (i in locations.indices) {
+                    if (locations[i].id == (it.data?.place?.id ?: -1)) {
                         currentPos = i
                     }
                 }

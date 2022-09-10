@@ -1,6 +1,7 @@
 package com.ssheetz.weathermap.repository
 
 import com.ssheetz.weathermap.model.ForecastData
+import com.ssheetz.weathermap.model.ForecastDataResult
 import com.ssheetz.weathermap.model.ForecastElement
 import com.ssheetz.weathermap.model.ForecastPlace
 import com.ssheetz.weathermap.repository.database.WeatherDatabase
@@ -15,16 +16,16 @@ import retrofit2.Retrofit
 class Repository (private val database: WeatherDatabase, private val retrofit: Retrofit) {
 
     // Fetch the forecast for a known location by place id from local database
-    fun forecast(placeid: Long) : Flow<ForecastData?> {
+    fun forecast(placeid: Long) : Flow<ForecastDataResult> {
         return flow {
             val elements = database.forecastDao().getForecasts(placeid)
             val place = database.placesDao().getPlace(placeid)
-            emit(ForecastData(place, elements))
+            emit(ForecastDataResult(ForecastData(place, elements), null))
         }
     }
 
     // Fetch the forecast for a place by lat/lon from OpenWeather.com and also store it in database
-    fun forecast(lat: Double, lon: Double)  : Flow<ForecastData?> {
+    fun forecast(lat: Double, lon: Double)  : Flow<ForecastDataResult> {
         val retrofit = retrofit.create(OpenWeatherRetrofitService::class.java)
         return flow {
             // exectute API call and map to model object
@@ -57,10 +58,10 @@ class Repository (private val database: WeatherDatabase, private val retrofit: R
                 }
                 database.placesDao().insertAll(place)
                 database.forecastDao().insertAll(entries)
-                emit(ForecastData(place, entries))
+                emit(ForecastDataResult(ForecastData(place, entries), null))
             }
             catch(e: Exception) {   // Problem getting the forecast
-                emit(null)
+                emit(ForecastDataResult(null, e))
             }
         }.flowOn(Dispatchers.IO) // Use the IO thread for this Flow
     }
