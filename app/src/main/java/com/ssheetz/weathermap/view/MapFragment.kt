@@ -62,16 +62,15 @@ class MapFragment : Fragment() {
             }
         }
 
-        viewModel.getSavedLocationsObserver().observe(viewLifecycleOwner, {
+        viewModel.getSavedLocationsObserver().observe(viewLifecycleOwner) {
             if (it != null) {
                 locationsAdapter.setLocations(it.places)
                 locationsAdapter.notifyDataSetChanged()
                 if (it.currentPos > -1) {
-                    val spinner = getView()?.findViewById<Spinner>(R.id.spinner_locations)
                     spinner?.setSelection(it.currentPos)
                 }
             }
-        })
+        }
 
         mapView = view.findViewById(R.id.mapbox_view)
         mapView.onCreate(savedInstanceState)
@@ -93,7 +92,7 @@ class MapFragment : Fragment() {
             true
         }
 
-        viewModel.getMapStateObserver().observe(viewLifecycleOwner, { mapState: MapState ->
+        viewModel.getMapState().observe(viewLifecycleOwner) { mapState: MapState ->
             mapboxMap.clear()
             if (mapState.hasMarker) {
                 mapboxMap.addMarker(
@@ -114,7 +113,7 @@ class MapFragment : Fragment() {
             mapboxMap.animateCamera(
                 CameraUpdateFactory.newCameraPosition(camPosition), 2000
             )
-        })
+        }
     }
 
     override fun onStart() {

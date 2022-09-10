@@ -20,13 +20,13 @@ import retrofit2.Retrofit
 
 class RepositoryTest {
 
-    lateinit var retrofit: Retrofit
-    lateinit var openweather: OpenWeatherRetrofitService
-    lateinit var searchResponse: Response<ForecastResult>
-    lateinit var repository: Repository
-    lateinit var database: WeatherDatabase
-    lateinit var forecastDao: ForecastDao
-    lateinit var placesDao: PlacesDao
+    private lateinit var retrofit: Retrofit
+    private lateinit var openweather: OpenWeatherRetrofitService
+    private lateinit var searchResponse: Response<ForecastResult>
+    private lateinit var repository: Repository
+    private lateinit var database: WeatherDatabase
+    private lateinit var forecastDao: ForecastDao
+    private lateinit var placesDao: PlacesDao
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -63,7 +63,7 @@ class RepositoryTest {
         Mockito.`when`(openweather.forecast(Mockito.anyDouble(), Mockito.anyDouble(), Mockito.anyString())).thenReturn(searchResponse)
         Mockito.`when`(retrofit.create(OpenWeatherRetrofitService::class.java)).thenReturn(openweather)
 
-        val firstPlace = repository.forecast(-75.0, 35.5).first()?.place
+        val firstPlace = repository.forecast(-75.0, 35.5).first().data?.place
 
         assertEquals(expectedCity, firstPlace)
     }

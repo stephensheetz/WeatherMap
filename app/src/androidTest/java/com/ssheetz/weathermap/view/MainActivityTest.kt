@@ -44,7 +44,7 @@ class MainActivityTest {
                     }
 
                     override fun matchesSafely(item: RecyclerView?): Boolean {
-                        return item?.adapter?.itemCount ?: 0 >= count
+                        return (item?.adapter?.itemCount ?: 0) >= count
                     }
                 }
             }

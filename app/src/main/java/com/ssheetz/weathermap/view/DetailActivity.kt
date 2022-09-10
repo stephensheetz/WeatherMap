@@ -28,7 +28,7 @@ class DetailActivity : AppCompatActivity() {
         setTitle(R.string.main_title)
         viewModel = ViewModelProvider(this).get(DetailActivityViewModel::class.java)
 
-        viewModel.getResultsObserver().observe(this, {data ->
+        viewModel.getResults().observe(this) { data ->
             val forecast = data.forecasts[0]
 
             // Load the image icon from URL
@@ -50,11 +50,11 @@ class DetailActivity : AppCompatActivity() {
             viewBinding.tvHumidity.text = forecast.humidity.toString() + " %"
             viewBinding.tvWindSpeed.text = " %.1f m/s".format(forecast.windSpeed)
             viewBinding.tvWindDirection.text = " %.0f deg".format(forecast.windDirection)
-        })
+        }
 
         // Request data from view model
         val placeId = intent.getLongExtra(EXTRA_PLACE_ID, -1)
         val timestamp = intent.getLongExtra(EXTRA_TIMESTAMP, -1)
-        viewModel.fetchSavedLocation(placeId, timestamp)
+        viewModel.refreshSavedLocation(placeId, timestamp)
     }
 }

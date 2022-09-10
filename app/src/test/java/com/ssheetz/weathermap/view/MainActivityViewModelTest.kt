@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.ssheetz.weathermap.TestCoroutineRule
 import com.ssheetz.weathermap.model.ForecastData
+import com.ssheetz.weathermap.model.ForecastDataResult
 import com.ssheetz.weathermap.model.ForecastElement
 import com.ssheetz.weathermap.model.ForecastPlace
 import com.ssheetz.weathermap.repository.Repository
@@ -27,10 +28,10 @@ import org.mockito.kotlin.mock
 @RunWith(MockitoJUnitRunner::class)
 class MainActivityViewModelTest {
 
-    lateinit var viewModel: MainActivityViewModel
-    lateinit var searchObserver: Observer<ForecastData>
-    lateinit var repository: Repository
-    lateinit var sampleData: ForecastData
+    private lateinit var viewModel: MainActivityViewModel
+    private lateinit var searchObserver: Observer<ForecastData>
+    private lateinit var repository: Repository
+    private lateinit var sampleData: ForecastData
 
     // Needed to test with LiveData
     @get:Rule
@@ -52,7 +53,9 @@ class MainActivityViewModelTest {
             ForecastElement(0, 123, 1002, "mainname", "some weather conditions", "someicon.png", 44.4f, 33.3f, 950f,77f, 23.1f, 223.0f)
         ))
 
-        Mockito.`when`(repository.forecast(anyDouble(), anyDouble())).thenReturn(flow{ emit(sampleData) })
+        Mockito.`when`(repository.forecast(anyDouble(), anyDouble())).thenReturn(flow{ emit(
+            ForecastDataResult(sampleData, null)
+        ) })
     }
 
 
@@ -60,15 +63,15 @@ class MainActivityViewModelTest {
     fun forecastUpdatesLiveDataWithForecastFromRepository() {
         testCoroutineRule.runBlockingTest {
 
-            viewModel.getResultsObserver().observeForever(searchObserver)
+            viewModel.getResults().observeForever(searchObserver)
             Mockito.`when`(repository.getSavedLocations()).thenReturn(
                 listOf( ForecastPlace(114L, "", -23.2, 44.5) )
             )
 
             viewModel.tapNewLocation(-45.1, 44.1, 7.0)
 
-            val forecasts = viewModel.getResultsObserver().value?.forecasts
-            val place = viewModel.getResultsObserver().value?.place
+            val forecasts = viewModel.getResults().value?.forecasts
+            val place = viewModel.getResults().value?.place
             assertEquals(1, forecasts?.size)
             assertEquals(123L, place?.id)
         }

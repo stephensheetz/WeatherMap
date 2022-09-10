@@ -13,18 +13,16 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailActivityViewModel @Inject constructor(
     private val repository: Repository): ViewModel() {
-    private var resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
 
-    fun getResultsObserver() : LiveData<ForecastData> {
-        return resultsLiveData
-    }
+    private val resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
+    fun getResults() : LiveData<ForecastData> = resultsLiveData
 
-    // Get forecast by known place ID
-    fun fetchSavedLocation(location: Long, timestamp: Long) {
+    fun refreshSavedLocation(location: Long, timestamp: Long) {
+        // Get forecast by known place ID
         viewModelScope.launch {
-            repository.forecast(location).collect { flowed ->
+            repository.forecast(location).collect { result ->
                 // find only the requested timestamp
-                flowed.data?.let { data ->
+                result.data?.let { data ->
                     data.forecasts.find { elem -> elem.timeUnixUTC == timestamp }?.let {
                         resultsLiveData.value = ForecastData(data.place, listOf(it))
                     }

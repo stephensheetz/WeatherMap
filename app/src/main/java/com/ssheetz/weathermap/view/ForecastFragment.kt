@@ -34,7 +34,7 @@ class ForecastFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity()).get(MainActivityViewModel::class.java)
         
-        viewModel.getResultsObserver().observe(viewLifecycleOwner) {
+        viewModel.getResults().observe(viewLifecycleOwner) {
             if (it != null) {
                 forecastAdapter.setForecastResult(it)
                 forecastAdapter.notifyDataSetChanged()
@@ -43,7 +43,7 @@ class ForecastFragment : Fragment() {
             }
         }
 
-        viewModel.getLoadingStateObserver().observe(viewLifecycleOwner) { loadingState ->
+        viewModel.getLoadingState().observe(viewLifecycleOwner) { loadingState ->
             when (loadingState) {
                 LoadingState.DONE -> showResults()
                 LoadingState.EMPTY, null -> showNoResults()

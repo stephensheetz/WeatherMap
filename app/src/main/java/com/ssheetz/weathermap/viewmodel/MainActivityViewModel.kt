@@ -18,22 +18,21 @@ import javax.inject.Inject
 @HiltViewModel
 class MainActivityViewModel @Inject constructor(
     private val repository: Repository): ViewModel() {
-    private var resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
-    private var loadingStateLiveData: MutableLiveData<LoadingState> = MutableLiveData()
-    private var savedLocationsLiveData: MutableLiveData<SavedLocations> = MutableLiveData()
-    private var mapStateLiveData: MutableLiveData<MapState> = MutableLiveData()
+
+    private val resultsLiveData: MutableLiveData<ForecastData> = MutableLiveData()
+    fun getResults() : LiveData<ForecastData> = resultsLiveData
+
+    private val loadingStateLiveData: MutableLiveData<LoadingState> = MutableLiveData()
+    fun getLoadingState() : LiveData<LoadingState> = loadingStateLiveData
+
+    private val mapStateLiveData: MutableLiveData<MapState> = MutableLiveData()
+    fun getMapState() : LiveData<MapState> = mapStateLiveData
+
+    private val  savedLocationsLiveData: MutableLiveData<SavedLocations> = MutableLiveData()
 
     init {
         // Default map position: center over the U.S.
         mapStateLiveData.value = MapState(40.0, -96.0, 2.0, false)
-    }
-
-    fun getResultsObserver() : LiveData<ForecastData> {
-        return resultsLiveData
-    }
-
-    fun getLoadingStateObserver() : LiveData<LoadingState> {
-        return loadingStateLiveData
     }
 
     fun getSavedLocationsObserver() : LiveData<SavedLocations> {
@@ -46,9 +45,7 @@ class MainActivityViewModel @Inject constructor(
         return savedLocationsLiveData
     }
 
-    fun getMapStateObserver() : LiveData<MapState> {
-        return mapStateLiveData
-    }
+
 
     // Get forecast by known place ID
     // Move map and zoom to level 8.0
