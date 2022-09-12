@@ -1,5 +1,5 @@
 # WeatherMap
-WeatherMap app demonstrates the use of:
+### WeatherMap app demonstrates the use of:
 
 - MVVM Architecture with LiveData
 
@@ -32,3 +32,14 @@ WeatherMap app demonstrates the use of:
 - Basic unit tests
 
 - Basic Espresso UI tests 
+
+
+
+## What it does / How to use it
+
+There is a geographic map on which you can click to place a marker and fetch
+the weather forecast for the next few days. The forecast gets displayed in a list
+below or next to the map, in 3 hour increments.  Clicking a map location also
+adds the place name to a drop-down list of recently viewed places.  Clicking
+a forecast will open a details screen.  You can return to the main screen with the
+back button.  Long-pressing a forecast will offer some sharing options.
