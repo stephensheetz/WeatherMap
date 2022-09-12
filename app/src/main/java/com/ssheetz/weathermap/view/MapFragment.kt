@@ -62,7 +62,7 @@ class MapFragment : Fragment() {
             }
         }
 
-        viewModel.getSavedLocationsObserver().observe(viewLifecycleOwner) {
+        viewModel.getSavedLocations().observe(viewLifecycleOwner) {
             if (it != null) {
                 locationsAdapter.setLocations(it.places)
                 locationsAdapter.notifyDataSetChanged()

@@ -35,7 +35,7 @@ class MainActivityViewModel @Inject constructor(
         mapStateLiveData.value = MapState(40.0, -96.0, 2.0, false)
     }
 
-    fun getSavedLocationsObserver() : LiveData<SavedLocations> {
+    fun getSavedLocations() : LiveData<SavedLocations> {
         // Perform an initial sync with database for saved locations
         CoroutineScope(Dispatchers.IO).launch {
             savedLocationsLiveData.postValue(SavedLocations(
@@ -44,8 +44,6 @@ class MainActivityViewModel @Inject constructor(
         }
         return savedLocationsLiveData
     }
-
-
 
     // Get forecast by known place ID
     // Move map and zoom to level 8.0
